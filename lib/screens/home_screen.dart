@@ -615,14 +615,38 @@ class _HomeScreenState extends State<HomeScreen>
                         provider.deviceInfo.isConnected ||
                         provider.deviceInfo.isConnected;
                     if (isConnected) {
-                      return IconButton(
-                        onPressed: () async {
-                          await provider.disconnect();
-                        },
-                        icon: Icon(Icons.power_settings_new),
-                        tooltip: AppLocalizations.of(context)!.disconnect,
-                        color: Colors.red.shade700,
-                      );
+                     return IconButton(
+  onPressed: () async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        icon: Icon(Icons.power_settings_new, color: Colors.red.shade700),
+        title: Text(l10n.disconnect),
+        content: const Text('Отключиться от устройства?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            style: FilledButton.styleFrom(
+              backgroundColor: Colors.red.shade700,
+            ),
+            child: Text(l10n.disconnect),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      await provider.disconnect();
+    }
+  },
+  icon: Icon(Icons.power_settings_new),
+  tooltip: AppLocalizations.of(context)!.disconnect,
+  color: Colors.red.shade700,
+);
                     }
                     return const SizedBox.shrink();
                   },
